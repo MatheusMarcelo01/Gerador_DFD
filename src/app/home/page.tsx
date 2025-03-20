@@ -1,9 +1,9 @@
-import TestComponent from '@/components/TestComponent';
+import Gerador from '@/components/Gerador';
 
 export default function Home() {
   return (
     <div>
-      <TestComponent />
+      <Gerador />
     </div>
   );
 }
