@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "docx": "^9.3.0",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "next": "15.2.3",
     "react": "^19.0.0",
