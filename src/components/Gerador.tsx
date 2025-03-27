@@ -71,6 +71,8 @@ const Gerador = () => {
           workbook.xlsx.load(data).then((wb) => {
             const worksheet = wb.getWorksheet(1); // Acessa a primeira planilha
 
+            worksheet.getRow(17).height = 2.35;
+
             // Capitalizando as palavras e substituindo valores das células com os dados do formulário
             worksheet.getCell("K4").value = capitalizeWords(formData.setor);
             worksheet.getCell("K5").value = capitalizeWords(formData.responsavel);
