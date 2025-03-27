@@ -4,9 +4,15 @@ import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import * as ExcelJS from "exceljs";
 
+// Função para capitalizar a primeira letra de cada palavra
+const capitalizeWords = (str: string) => {
+  return str
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 const Gerador = () => {
   const [formData, setFormData] = useState({
-    solicitante: "",
     responsavel: "",
     objeto: "",
     justificativa: "",
@@ -14,7 +20,7 @@ const Gerador = () => {
     ficha: "",
     valorEstimado: "",
     setor: "",
-    itens: [{ quantidade: "", unidade: "", descricao: "" }],
+    itens: [{ quantidade: "", unidade: "Material", descricao: "" }], // Padrão "Material"
   });
 
   const handleChange = (e, index = null) => {
@@ -31,7 +37,7 @@ const Gerador = () => {
   const addItem = () => {
     setFormData({
       ...formData,
-      itens: [...formData.itens, { quantidade: "", unidade: "", descricao: "" }],
+      itens: [...formData.itens, { quantidade: "", unidade: "Material", descricao: "" }], // Padrão "Material"
     });
   };
 
@@ -51,20 +57,49 @@ const Gerador = () => {
           workbook.xlsx.load(data).then((wb) => {
             const worksheet = wb.getWorksheet(1); // Acessa a primeira planilha
 
-            // Substituindo valores das células com os dados do formulário
-            worksheet.getCell("K4").value = formData.setor;
-            worksheet.getCell("K5").value = formData.responsavel;
-            worksheet.getCell("C11").value = formData.objeto;
-            worksheet.getCell("C14").value = formData.justificativa;
-            worksheet.getCell("J16").value = formData.ficha;
-            worksheet.getCell("J59").value = formData.localEntrega;
-            worksheet.getCell("C53").value = formData.valorEstimado;
+            // Capitalizando as palavras e substituindo valores das células com os dados do formulário
+            worksheet.getCell("K4").value = capitalizeWords(formData.setor);
+            worksheet.getCell("K5").value = capitalizeWords(formData.responsavel);
+            worksheet.getCell("C11").value = capitalizeWords(formData.objeto);
+            worksheet.getCell("C14").value = capitalizeWords(formData.justificativa);
+            worksheet.getCell("J16").value = capitalizeWords(formData.ficha);
+            worksheet.getCell("J59").value = capitalizeWords(formData.localEntrega);
+            worksheet.getCell("C53").value = "R$ " + formData.valorEstimado;
 
-            // Atualizando os itens
+            // Atualizando a célula de data (C60)
+            const today = new Date();
+            const day = today.getDate();
+            const monthNames = [
+              "janeiro",
+              "fevereiro",
+              "março",
+              "abril",
+              "maio",
+              "junho",
+              "julho",
+              "agosto",
+              "setembro",
+              "outubro",
+              "novembro",
+              "dezembro",
+            ];
+            const month = monthNames[today.getMonth()];
+            const year = today.getFullYear();
+            const formattedDate = `Manduri, ${day} de ${month} de ${year}`;
+            worksheet.getCell("C60").value = formattedDate;
+
+            // Atualizando os itens (C23 até C47, G23 até G47, J23 até J47, K23 até K47)
             formData.itens.forEach((item, index) => {
-              worksheet.getCell(`A${6 + index}`).value = item.quantidade;
-              worksheet.getCell(`B${6 + index}`).value = item.unidade;
-              worksheet.getCell(`C${6 + index}`).value = item.descricao;
+              // Calcular a linha correspondente para o item
+              const row = 23 + index;
+
+              if (row <= 47) {
+                // Atualizando os dados das células
+                worksheet.getCell(`C${row}`).value = `Item ${String(index + 1).padStart(2, "0")}`;
+                worksheet.getCell(`G${row}`).value = item.quantidade;
+                worksheet.getCell(`J${row}`).value = item.unidade;
+                worksheet.getCell(`K${row}`).value = item.descricao;
+              }
             });
 
             // Gerar o arquivo Excel atualizado
@@ -84,15 +119,6 @@ const Gerador = () => {
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
       <h1 className="text-xl font-bold mb-4">Gerar Documento de Formalização da Demanda</h1>
-      
-      <input
-        className="border p-2 w-full mb-2"
-        type="text"
-        name="solicitante"
-        placeholder="Nome do Solicitante"
-        value={formData.solicitante}
-        onChange={handleChange}
-      />
       
       <input
         className="border p-2 w-full mb-2"
@@ -166,14 +192,17 @@ const Gerador = () => {
             value={item.quantidade}
             onChange={(e) => handleChange(e, index)}
           />
-          <input
+          
+          <select
             className="border p-2"
-            type="text"
             name="unidade"
-            placeholder="Unidade"
             value={item.unidade}
             onChange={(e) => handleChange(e, index)}
-          />
+          >
+            <option value="Material">Material</option>
+            <option value="Serviço">Serviço</option>
+          </select>
+          
           <input
             className="border p-2"
             type="text"
