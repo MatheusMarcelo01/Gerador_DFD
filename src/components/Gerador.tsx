@@ -41,6 +41,20 @@ const Gerador = () => {
     });
   };
 
+  // Função para resetar os campos do formulário
+  const resetForm = () => {
+    setFormData({
+      responsavel: "",
+      objeto: "",
+      justificativa: "",
+      localEntrega: "",
+      ficha: "",
+      valorEstimado: "",
+      setor: "",
+      itens: [{ quantidade: "", unidade: "Material", descricao: "" }],
+    });
+  };
+
   const generateExcel = () => {
     const fileUrl = "/DFD.xlsx"; // Caminho do arquivo de modelo
 
@@ -65,6 +79,12 @@ const Gerador = () => {
             worksheet.getCell("J16").value = capitalizeWords(formData.ficha);
             worksheet.getCell("J59").value = capitalizeWords(formData.localEntrega);
             worksheet.getCell("C53").value = "R$ " + formData.valorEstimado;
+
+            // Inserindo o valor do responsável na célula F62
+            worksheet.getCell("F62").value = capitalizeWords(formData.responsavel);
+
+            // Inserindo o valor do setor na célula F63
+            worksheet.getCell("F63").value = capitalizeWords(formData.setor);
 
             // Atualizando a célula de data (C60)
             const today = new Date();
@@ -102,9 +122,13 @@ const Gerador = () => {
               }
             });
 
-            // Gerar o arquivo Excel atualizado
+            // Gerar o arquivo Excel atualizado com o nome baseado no setor
+            const fileName = `DFD_${formData.setor}.xlsx`; // Nome do arquivo com o setor
             wb.xlsx.writeBuffer().then((buffer) => {
-              saveAs(new Blob([buffer]), "DFD_Gerado.xlsx");
+              saveAs(new Blob([buffer]), fileName);
+
+              // Resetando os campos após a geração do arquivo
+              resetForm();
             });
           });
         } catch (error) {
@@ -204,7 +228,7 @@ const Gerador = () => {
           </select>
           
           <input
-            className="border p-2"
+            className="border p-2 w-3/4"  // Aumenta a largura do campo de descrição
             type="text"
             name="descricao"
             placeholder="Descrição"
