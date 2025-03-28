@@ -1,6 +1,8 @@
 # Gerador de Documento de Formalização de Demanda (DFD)
+<p align="center">
+  <img src="public/logo.png" alt="logo" width="150" style="max-width:100%;height:auto;" />
+</p>
 
-![Logo do Projeto](public/logo.png)
 
 ## Sobre o Projeto
 Este projeto foi desenvolvido para a **Prefeitura Municipal de Manduri** com o objetivo de facilitar a criação do **Documento de Formalização de Demanda (DFD)** para **compras diretas**. O sistema permite que os funcionários preencham as informações necessárias e gerem automaticamente um arquivo **XLSX** formatado corretamente.
