@@ -47,5 +47,4 @@ Se desejar contribuir, sinta-se à vontade para abrir issues e pull requests!
 Este projeto é de uso interno para a Prefeitura Municipal de Manduri e pode ser adaptado conforme necessidade.
 
 ---
-Desenvolvido com ❤ por Matheus.
 
