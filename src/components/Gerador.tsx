@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import * as ExcelJS from "exceljs";
 
-// Função para capitalizar a primeira letra de cada palavra
 const capitalizeWords = (str: string) => {
   return str
     .toLowerCase()
@@ -20,7 +19,7 @@ const Gerador = () => {
     ficha: "",
     valorEstimado: "",
     setor: "",
-    itens: [{ quantidade: "", unidade: "Material", descricao: "" }], // Padrão "Material"
+    itens: [{ quantidade: "", unidade: "Material", descricao: "" }], 
   });
 
   const handleChange = (e, index = null) => {
@@ -37,11 +36,10 @@ const Gerador = () => {
   const addItem = () => {
     setFormData({
       ...formData,
-      itens: [...formData.itens, { quantidade: "", unidade: "Material", descricao: "" }], // Padrão "Material"
+      itens: [...formData.itens, { quantidade: "", unidade: "Material", descricao: "" }], 
     });
   };
 
-  // Função para resetar os campos do formulário
   const resetForm = () => {
     setFormData({
       responsavel: "",
@@ -56,7 +54,7 @@ const Gerador = () => {
   };
 
   const generateExcel = () => {
-    const fileUrl = "/DFD.xlsx"; // Caminho do arquivo de modelo
+    const fileUrl = "/DFD.xlsx"; 
 
     fetch(fileUrl)
       .then((response) => {
@@ -69,9 +67,10 @@ const Gerador = () => {
         try {
           const workbook = new ExcelJS.Workbook();
           workbook.xlsx.load(data).then((wb) => {
-            const worksheet = wb.getWorksheet(1); // Acessa a primeira planilha
+            const worksheet = wb.getWorksheet(1);
 
-            // Capitalizando as palavras e substituindo valores das células com os dados do formulário
+            worksheet.getRow(17).height = 2.35;
+
             worksheet.getCell("K4").value = capitalizeWords(formData.setor);
             worksheet.getCell("K5").value = capitalizeWords(formData.responsavel);
             worksheet.getCell("C11").value = capitalizeWords(formData.objeto);
@@ -80,13 +79,10 @@ const Gerador = () => {
             worksheet.getCell("J59").value = capitalizeWords(formData.localEntrega);
             worksheet.getCell("C53").value = "R$ " + formData.valorEstimado;
 
-            // Inserindo o valor do responsável na célula F62
             worksheet.getCell("F62").value = capitalizeWords(formData.responsavel);
 
-            // Inserindo o valor do setor na célula F63
             worksheet.getCell("F63").value = capitalizeWords(formData.setor);
 
-            // Atualizando a célula de data (C60)
             const today = new Date();
             const day = today.getDate();
             const monthNames = [
@@ -108,13 +104,10 @@ const Gerador = () => {
             const formattedDate = `Manduri, ${day} de ${month} de ${year}`;
             worksheet.getCell("C60").value = formattedDate;
 
-            // Atualizando os itens (C23 até C47, G23 até G47, J23 até J47, K23 até K47)
             formData.itens.forEach((item, index) => {
-              // Calcular a linha correspondente para o item
               const row = 23 + index;
 
               if (row <= 47) {
-                // Atualizando os dados das células
                 worksheet.getCell(`C${row}`).value = `Item ${String(index + 1).padStart(2, "0")}`;
                 worksheet.getCell(`G${row}`).value = item.quantidade;
                 worksheet.getCell(`J${row}`).value = item.unidade;
@@ -122,12 +115,10 @@ const Gerador = () => {
               }
             });
 
-            // Gerar o arquivo Excel atualizado com o nome baseado no setor
-            const fileName = `DFD_${formData.setor}.xlsx`; // Nome do arquivo com o setor
+            const fileName = `DFD_${formData.setor}.xlsx`; 
             wb.xlsx.writeBuffer().then((buffer) => {
               saveAs(new Blob([buffer]), fileName);
 
-              // Resetando os campos após a geração do arquivo
               resetForm();
             });
           });
@@ -228,7 +219,7 @@ const Gerador = () => {
           </select>
           
           <input
-            className="border p-2 w-3/4"  // Aumenta a largura do campo de descrição
+            className="border p-2 w-3/4" 
             type="text"
             name="descricao"
             placeholder="Descrição"
